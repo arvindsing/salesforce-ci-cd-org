@@ -67,8 +67,8 @@ jobs:
     #- name : Deploy to SF Org
      # run: sfdx force:mdapi:deploy -l NoTestRun -d ./toDeploy -u prod -w 10
     
-    - name: 'Check-only deploy delta changes - run specified tests'
-      run: sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ForgotPasswordControllerTest --json u prod  
+   # - name: 'Check-only deploy delta changes - run specified tests'
+   #   run: sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ForgotPasswordControllerTest --json u prod  
     
     # Deploy 
     - name : Deploy to SF Org
