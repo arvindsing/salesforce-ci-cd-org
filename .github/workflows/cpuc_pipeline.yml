@@ -60,8 +60,8 @@ jobs:
     - name: Convert to Deploy Source
       run: sfdx force:source:convert -r ./force-app -d ./toDeploy
     
-    #- name: 'Deploy the entire branch to Production org'
-     # run: sfdx force:source:deploy -p force-app -l NoTestRun --json -u prod -w 100
+    - name: 'Deploy the entire branch to Production org'
+      run: sfdx force:source:deploy -p force-app -l NoTestRun --json -u prod -w 100
     
      # Deploy 
     #- name : Deploy to SF Org
