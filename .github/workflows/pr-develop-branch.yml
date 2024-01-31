@@ -137,9 +137,14 @@ jobs:
                   echo ${{ secrets.SFDX_INTEGRATION_URL}} > ./SFDX_INTEGRATION_URL.txt
 
             # Authenticate to org using the URL stored in the text file
-            - name: 'Authenticate to Integration Org'
-              run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
-
+            #- name: 'Authenticate to Integration Org'
+            # run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
+            # Authorize SF Org
+            - name: Authorize SF Org
+              env:
+                CLIENT_ID: ${{ secrets.SALESFORCEPRODCLIENTID }}
+              run: sfdx force:auth:jwt:grant --clientid 3MVG97quAmFZJfVzX9hl6Y_TDSbjsulFprCR3Pcao3UaucO8cn4bTCxZoD5XSl3wDRXq1bMs2IUDxoTEyZJfk --jwtkeyfile server.key --username arvindsing@gmail.com --instanceurl https://login.salesforce.com -a prod
+              
             # We use SFDX Git Delta to create a directory with only the metadata that has changed.
             # this allows us to deploy only those changes, as opposed to deploying the entire branch. 
             # This helps reducing deployment times
