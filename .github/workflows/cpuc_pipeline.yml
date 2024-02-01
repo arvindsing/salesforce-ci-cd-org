@@ -23,13 +23,27 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
-        node-version: '20'
+        node-version: '14'
+        
+    # Checkout the source code
+    - name: 'Checkout source code'
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: 'Install Salesforce CLI'
+      run: |
+          wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
+          mkdir ~/sfdx
+          tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
+          echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+          ~/sfdx/bin/sfdx version
     
     # Install SFDX CLI
-    - name: Install SFDX CLI
+    #- name: Install SFDX CLI
       #run: npm install sfdx-cli --global
       #run: npm install -g sfdx-cli@latest-rc
-      run: npm install @salesforce/cli --global
+      #run: npm install @salesforce/cli --global
     
     # install SFDX-Git-Delta plugin - https://github.com/scolladon/sfdx-git-delta
     - name: 'Installing sfdx git delta'
@@ -37,43 +51,24 @@ jobs:
             echo y | sfdx plugins:install sfdx-git-delta
             sfdx plugins 
             
-    # Checkout the source code
-    - name: 'Checkout source code'
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    - name: 'Create delta packages for new, modified or deleted metadata'
-      run: | 
-          mkdir changed-sources
-          #sfdx sgd:source:delta --to "HEAD" --from "HEAD~1" --output changed-sources/ --generate-delta --source force-app/
-          sfdx sgd:source:delta --to "HEAD" --from "HEAD~1" --output "."
-          
-    # Authorize SF Org
+        
+      
+   # Authorize SF Org
     - name: Authorize SF Org
       env:
         CLIENT_ID: ${{ secrets.SALESFORCEPRODCLIENTID }}
       run: sfdx force:auth:jwt:grant --clientid 3MVG97quAmFZJfVzX9hl6Y_TDSbjsulFprCR3Pcao3UaucO8cn4bTCxZoD5XSl3wDRXq1bMs2IUDxoTEyZJfk --jwtkeyfile server.key --username arvindsing@gmail.com --instanceurl https://login.salesforce.com -a prod
 
-    
+    - name: 'Create delta packages for new, modified or deleted metadata'
+      run: | 
+          mkdir changed-sources
+          sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/
           
-    # Convert to Deploy Source
-    #- name: Convert to Deploy Source
-      #run: sfdx force:source:convert -r ./force-app -d ./toDeploy
-      #run: sfdx force:source:convert -r ./changed-sources/destructiveChanges/ -d ./toDeploy
-    
-    #- name: 'Deploy the entire branch to Production org'
-     # run: sfdx force:source:deploy -p force-app -l NoTestRun --json -u prod -w 100
-    
-     # Deploy 
-    - name : Deploy to SF Org
-      run: sfdx force:source:deploy -x package/package.xml --postdestructivechanges destructiveChanges/destructiveChanges.xml -u prod
-    
-   # - name: 'Check-only deploy delta changes - run specified tests'
-   #   run: sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ForgotPasswordControllerTest --json u prod  
+ 
+          
     
     # Deploy 
-    #- name : Deploy to SF Org
-     # run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings -u prod -w 100  
+    - name : Deploy to SF Org
+      run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings -u prod -w 100  
 
       
