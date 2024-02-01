@@ -47,6 +47,7 @@ jobs:
       run: | 
           mkdir changed-sources
           sfdx sgd:source:delta --to "HEAD" --from "HEAD~1" --output changed-sources/ --generate-delta --source force-app/
+          sfdx sgd:source:delta --to "HEAD" --from "HEAD~1" --output "."
           
     # Authorize SF Org
     - name: Authorize SF Org
@@ -57,9 +58,9 @@ jobs:
     
           
     # Convert to Deploy Source
-    - name: Convert to Deploy Source
+    #- name: Convert to Deploy Source
       #run: sfdx force:source:convert -r ./force-app -d ./toDeploy
-      run: sfdx force:source:convert -r ./changed-sources/destructiveChanges/ -d ./toDeploy
+      #run: sfdx force:source:convert -r ./changed-sources/destructiveChanges/ -d ./toDeploy
     
     #- name: 'Deploy the entire branch to Production org'
      # run: sfdx force:source:deploy -p force-app -l NoTestRun --json -u prod -w 100
