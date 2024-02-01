@@ -58,7 +58,8 @@ jobs:
           
     # Convert to Deploy Source
     - name: Convert to Deploy Source
-      run: sfdx force:source:convert -r ./force-app -d ./toDeploy
+      #run: sfdx force:source:convert -r ./force-app -d ./toDeploy
+      run: sfdx force:source:convert -r ./changed-sources/destructiveChanges/ -d ./toDeploy
     
     #- name: 'Deploy the entire branch to Production org'
      # run: sfdx force:source:deploy -p force-app -l NoTestRun --json -u prod -w 100
@@ -71,7 +72,7 @@ jobs:
    #   run: sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ForgotPasswordControllerTest --json u prod  
     
     # Deploy 
-    - name : Deploy to SF Org
-      run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings -u prod -w 100  
+    #- name : Deploy to SF Org
+     # run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings -u prod -w 100  
 
       
