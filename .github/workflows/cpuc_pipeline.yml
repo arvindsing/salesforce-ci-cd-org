@@ -33,6 +33,16 @@ jobs:
               uses: actions/checkout@v3
               with:
                 fetch-depth: 0
-
-    
+            - name: 'Create delta packages for new, modified or deleted metadata'
+              run: | 
+                  mkdir changed-sources
+                  sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/
+                  
+    # Authorize SF Org
+            - name: Authorize SF Org
+              env:
+                CLIENT_ID: ${{ secrets.SALESFORCEPRODCLIENTID }}
+              run: sfdx force:auth:jwt:grant --clientid 3MVG97quAmFZJfVzX9hl6Y_TDSbjsulFprCR3Pcao3UaucO8cn4bTCxZoD5XSl3wDRXq1bMs2IUDxoTEyZJfk --jwtkeyfile server.key --username arvindsing@gmail.com --instanceurl https://login.salesforce.com -a prod
    
+            - name: 'Deploy destructive changes (if any) to Integration org'
+              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings -u prod
